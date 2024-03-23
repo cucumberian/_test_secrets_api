@@ -1,0 +1,27 @@
+version: "3.6"
+
+services:
+  api:
+    build: app
+    command: sh -c "uvicorn app:app --host=0.0.0.0 --port=8000"
+    ports:
+      - 8000:8000
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2.4-alpine3.19
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - 6380:6379
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
