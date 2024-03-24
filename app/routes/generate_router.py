@@ -7,8 +7,11 @@ from fastapi import APIRouter
 from fastapi import Body
 from fastapi.responses import JSONResponse
 
+from config import Config
+
 generate_router = APIRouter()
 
+salt_bytes = Config.SALT.encode()
 
 @generate_router.post("")
 def get_secret_key(
@@ -26,9 +29,10 @@ def get_secret_key(
         title="time to live in seconds, default=3600s",
     ),
 ):
-    crypted_content: bytes = crypt_content.encrypt_text(
-        text=secret_content,
+    crypted_content: bytes = crypt_content.encrypt_message(
+        message=secret_content,
         password=code_phrase,
+        salt_bytes=salt_bytes,
     )
     # random key generation
     rand_key = os.urandom(32).hex()

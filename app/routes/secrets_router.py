@@ -6,10 +6,11 @@ from fastapi.responses import JSONResponse
 from database.db import content_db
 
 from services import crypt_content
-
+from config import Config
 
 secrets_router = APIRouter()
 
+salt_bytes = Config.SALT.encode()
 
 @secrets_router.post("/{secret_key:str}")
 def return_secret(
@@ -24,9 +25,10 @@ def return_secret(
         )
 
     try:
-        decrypted_content = crypt_content.decrypt_text(
-            encrypted_bytes=encrypted_content,
+        decrypted_content = crypt_content.decrypt_message(
+            encrypted_message=encrypted_content,
             password=code_phrase,
+            salt_bytes=salt_bytes,
         )
     except InvalidToken:
         return JSONResponse(

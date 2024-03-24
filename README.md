@@ -24,9 +24,31 @@ JSON Api сервис.
 
 
 ## Запуск
+### через docker-compose
 ```shell
 docker-compose up -d
 ```
+### вручную
+1. Задать преемнные окружения, напрмиер через файл `.env`:
+```env
+export REDIS_HOST=127.0.0.1
+export REDIS_PORT=6379
+export REDIS_DB=0
+```
+2. Считать файл с перемеными окружения
+```shell
+source .env
+```
+3. перейти в каталог с приложение и установить зависсимости
+```shell
+cd app
+pip3 install -r requirements.txt
+```
+4. запустить dev сервер через uvicorn
+```shell
+uvicorn app:app --host 127.0.0.1 --port 8000
+```
+
 - апи сервиса доступно по адресу http://localhost:8000/
 - документация по апи доступна по адресу http://localhost:8000/docs
 
