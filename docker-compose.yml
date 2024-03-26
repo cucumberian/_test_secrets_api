@@ -13,6 +13,8 @@ services:
       - REDIS_PORT=6379
       - REDIS_DB=0
       - SALT=${SALT}
+      - KEY_SIZE=12
+      - CODE_PHRASE_MIN_LENGTH=6
     depends_on:
       - redis
     restart: unless-stopped

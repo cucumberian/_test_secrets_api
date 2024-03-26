@@ -7,16 +7,21 @@ from database.db import content_db
 
 from services import crypt_content
 from config import Config
+from models.models import SecretAccess
 
 secrets_router = APIRouter()
 
 salt_bytes = Config.SALT.encode()
 
+
 @secrets_router.post("/{secret_key:str}")
 def return_secret(
     secret_key: str = Path(),
-    code_phrase: str = Body(min_length=8),
+    secret_access: SecretAccess = Body(),
 ):
+    code_phrase = secret_access.code_phrase
+    print("secret_key =", secret_key)
+    print("code_phrase =", code_phrase)
     encrypted_content = content_db.get(name=secret_key)
     if not encrypted_content:
         return JSONResponse(

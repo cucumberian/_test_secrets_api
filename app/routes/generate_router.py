@@ -8,39 +8,30 @@ from fastapi import Body
 from fastapi.responses import JSONResponse
 
 from config import Config
+from models.models import SecretGenerate
 
 generate_router = APIRouter()
 
 salt_bytes = Config.SALT.encode()
 
+
 @generate_router.post("")
 def get_secret_key(
-    secret_content: str = Body(
-        min_length=1, title="secret content, min_length=1"
-    ),
-    code_phrase: str = Body(
-        min_length=8,
-        title="code phrase, min_length=8",
-    ),
-    ttl_seconds: int = Body(
-        3600,
-        ge=5,
-        le=3600,
-        title="time to live in seconds, default=3600s",
-    ),
+    secret_generate: SecretGenerate = Body(),
 ):
-    crypted_content: bytes = crypt_content.encrypt_message(
-        message=secret_content,
-        password=code_phrase,
+    
+    encrypted_content: bytes = crypt_content.encrypt_message(
+        message=secret_generate.secret_content,
+        password=secret_generate.code_phrase,
         salt_bytes=salt_bytes,
     )
     # random key generation
-    rand_key = os.urandom(32).hex()
+    rand_key = os.urandom(Config.KEY_SIZE).hex()
 
     result = content_db.set(
         name=rand_key,
-        value=crypted_content,
-        ex=ttl_seconds,
+        value=encrypted_content,
+        ex=secret_generate.ttl_seconds,
     )
     if not result:
         return JSONResponse(
