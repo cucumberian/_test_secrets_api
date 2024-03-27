@@ -17,3 +17,10 @@ class SecretGenerate(SecretAccess):
         le=7 * 24 * 3600,
         title="time to live in seconds, default=3600s",
     )
+
+class SecretGenerateResponse(BaseModel):
+    secret_key: str = Field(
+        min_length=Config.KEY_SIZE,
+        title="Secret key",
+    )
+    ttl_seconds: int = Field(title="time to live in seconds")
